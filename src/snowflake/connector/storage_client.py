@@ -4,6 +4,7 @@
 
 from __future__ import division
 
+import io
 import os
 import shutil
 import tempfile
@@ -378,7 +379,7 @@ class SnowflakeStorageClient(ABC):
                 fd.seek(chunk_id * self.chunk_size)
                 _data = fd.read(self.chunk_size)
         logger.debug(f"Uploading chunk {chunk_id} of file {self.data_file}")
-        self._upload_chunk(chunk_id, _data)
+        self._upload_chunk(chunk_id, io.BytesIO(_data))
         logger.debug(f"Successfully uploaded chunk {chunk_id} of file {self.data_file}")
 
     @abstractmethod
