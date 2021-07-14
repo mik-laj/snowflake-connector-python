@@ -15,7 +15,7 @@ import threading
 from concurrent.futures.thread import ThreadPoolExecutor
 from logging import getLogger
 from queue import Queue
-from time import sleep, time
+from time import CLOCK_THREAD_CPUTIME_ID, clock_gettime, sleep, time
 from typing import IO, TYPE_CHECKING, Any, Dict, List, Optional, Type, Union
 
 from boto3.session import Session
@@ -615,6 +615,7 @@ class SnowflakeFileTransferAgent(object):
                     )
 
             logger.debug(f"getting digest file={meta.real_src_file_name}")
+            t1 = clock_gettime(CLOCK_THREAD_CPUTIME_ID)
             if meta.src_stream is None:
                 (
                     meta.sha256_digest,
@@ -629,6 +630,8 @@ class SnowflakeFileTransferAgent(object):
                 ) = SnowflakeFileUtil.get_digest_and_size_for_stream(
                     meta.real_src_stream or meta.src_stream
                 )
+            t2 = clock_gettime(CLOCK_THREAD_CPUTIME_ID)
+            logger.debug(f"done getting digest, took {t2 - t1} seconds")
             logger.debug("really uploading data")
             storage_client = SnowflakeFileTransferAgent.get_storage_client(
                 meta.stage_location_type
