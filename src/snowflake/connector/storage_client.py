@@ -367,17 +367,23 @@ class SnowflakeStorageClient(ABC):
             meta.result_status = ResultStatus.ERROR
 
     def upload_chunk(self, chunk_id: int) -> None:
+        if not self.meta.real_src_stream and not self.meta.src_stream:
+            logger.debug(f"opening file {self.data_file}")
         fd = (
             self.meta.real_src_stream
             or self.meta.src_stream
             or open(self.data_file, "rb")
         )
+        if not self.meta.real_src_stream and not self.meta.src_stream:
+            logger.debug(f"done opening file {self.data_file}, now seeking")
         with fd:
             if self.num_of_chunks == 1:
                 _data = fd.read()
             else:
                 fd.seek(chunk_id * self.chunk_size)
                 _data = fd.read(self.chunk_size)
+        if not self.meta.real_src_stream and not self.meta.src_stream:
+            logger.debug(f"done seeking {self.data_file}, now uploading")
         logger.debug(f"Uploading chunk {chunk_id} of file {self.data_file}")
         self._upload_chunk(chunk_id, io.BytesIO(_data))
         logger.debug(f"Successfully uploaded chunk {chunk_id} of file {self.data_file}")

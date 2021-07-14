@@ -387,13 +387,13 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
 
         # conn.request() calls http.client.*.request, not the method in
         # urllib3.request. It also calls makefile (recv) on the socket.
-        log.debug("KUSHAN pre-send")
+        log.debug(f"KUSHAN pre-send {url}")
         try:
             if chunked:
                 conn.request_chunked(method, url, **httplib_request_kw)
             else:
                 conn.request(method, url, **httplib_request_kw)
-            log.debug("KUSHAN sent")
+            log.debug(f"KUSHAN sent {url}")
         # We are swallowing BrokenPipeError (errno.EPIPE) since the server is
         # legitimately able to close the connection after sending a valid response.
         # With this behaviour, the received response is still readable.

@@ -8,7 +8,9 @@ import base64
 import json
 import os
 import tempfile
+import time
 from logging import getLogger
+from time import CLOCK_THREAD_CPUTIME_ID
 from typing import IO, TYPE_CHECKING, Tuple
 
 from Cryptodome.Cipher import AES
@@ -70,6 +72,7 @@ class SnowflakeEncryptionUtil(object):
             encryption_material.query_stage_master_key
         )
         key_size = len(decoded_key)
+        t1 = time.clock_gettime(CLOCK_THREAD_CPUTIME_ID)
         logger.debug("key_size = %s", key_size)
 
         # Generate key for data encryption
@@ -127,6 +130,9 @@ class SnowflakeEncryptionUtil(object):
             iv=base64.b64encode(iv_data).decode("utf-8"),
             matdesc=matdesc_to_unicode(mat_desc),
         )
+
+        t2 = time.clock_gettime(CLOCK_THREAD_CPUTIME_ID)
+        logger.debug(f"done encryption, took {t2 - t1} seconds")
         return metadata
 
     @staticmethod
