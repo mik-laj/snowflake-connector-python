@@ -9,6 +9,7 @@ import gzip
 import os
 import shutil
 import struct
+import time
 from io import BytesIO, open
 from logging import getLogger
 from typing import IO, Tuple
@@ -33,6 +34,7 @@ class SnowflakeFileUtil(object):
         Returns:
             Tuple of src's digest and src's size in bytes.
         """
+        t1 = time.clock_gettime(time.CLOCK_THREAD_CPUTIME_ID)
         use_openssl_only = os.getenv("SF_USE_OPENSSL_ONLY", "False") == "True"
         CHUNK_SIZE = 16 * 4 * 1024
         if not use_openssl_only:
@@ -57,6 +59,8 @@ class SnowflakeFileUtil(object):
 
         size = src.tell()
         src.seek(0)
+        t2 = time.clock_gettime(time.CLOCK_THREAD_CPUTIME_ID)
+        logger.debug(f"done getting digest, took {t2 - t1} seconds")
         return digest, size
 
     @staticmethod
