@@ -129,6 +129,7 @@ class SnowflakeStorageClient(ABC):
     def get_digest(self):
         meta = self.meta
         logger.debug(f"getting digest file={meta.real_src_file_name}")
+        t1 = time.clock_gettime(time.CLOCK_THREAD_CPUTIME_ID)
         if meta.src_stream is None:
             (
                 meta.sha256_digest,
@@ -141,6 +142,8 @@ class SnowflakeStorageClient(ABC):
             ) = SnowflakeFileUtil.get_digest_and_size_for_stream(
                 meta.real_src_stream or meta.src_stream
             )
+        t2 = time.clock_gettime(time.CLOCK_THREAD_CPUTIME_ID)
+        logger.debug(f"done getting digest, took {t2 - t1} seconds")
 
     def encrypt(self):
         meta = self.meta
