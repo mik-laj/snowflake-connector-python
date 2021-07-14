@@ -43,7 +43,11 @@ class SnowflakeFileUtil(object):
             backend = default_backend()
             chosen_hash = hashes.SHA256()
             hasher = hashes.Hash(chosen_hash, backend)
+        i = 0
         while True:
+            if i % 3000 == 0:
+                logger.debug(f"reading chunk, {i}")
+            i += 1
             chunk = src.read(CHUNK_SIZE)
             if chunk == b"":
                 break
