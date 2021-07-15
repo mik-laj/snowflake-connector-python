@@ -393,7 +393,6 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
                 conn.request_chunked(method, url, **httplib_request_kw)
             else:
                 conn.request(method, url, **httplib_request_kw)
-            log.debug(f"KUSHAN sent {url}")
         # We are swallowing BrokenPipeError (errno.EPIPE) since the server is
         # legitimately able to close the connection after sending a valid response.
         # With this behaviour, the received response is still readable.
@@ -462,6 +461,7 @@ class HTTPConnectionPool(ConnectionPool, RequestMethods):
             httplib_response.length,
         )
 
+        log.debug(f"KUSHAN sent {url}")
         try:
             assert_header_parsing(httplib_response.msg)
         except (HeaderParsingError, TypeError) as hpe:  # Platform-specific: Python 3
