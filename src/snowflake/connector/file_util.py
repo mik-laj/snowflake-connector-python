@@ -44,18 +44,31 @@ class SnowflakeFileUtil(object):
             chosen_hash = hashes.SHA256()
             hasher = hashes.Hash(chosen_hash, backend)
         i = 0
+        read_deltas = []
+        update_deltas = []
         while True:
             if i % 3000 == 0:
                 logger.debug(f"reading chunk, {i}")
             i += 1
+            read_start = time.clock_gettime(time.CLOCK_THREAD_CPUTIME_ID)
             chunk = src.read(CHUNK_SIZE)
             if chunk == b"":
                 break
+            read_end = time.clock_gettime(time.CLOCK_THREAD_CPUTIME_ID)
+            read_deltas.append(read_end - read_start)
+            update_start = time.clock_gettime(time.CLOCK_THREAD_CPUTIME_ID)
             if not use_openssl_only:
                 m.update(chunk)
             else:
                 hasher.update(chunk)
+            update_end = time.clock_gettime(time.CLOCK_THREAD_CPUTIME_ID)
+            update_deltas.append(update_end - update_start)
 
+        def avg(lst):
+            return sum(lst) / len(lst)
+
+        logger.debug(f"average time to read: {avg(read_deltas)}")
+        logger.debug(f"average time to update: {avg(update_deltas)}")
         if not use_openssl_only:
             digest = base64.standard_b64encode(m.digest()).decode(UTF8)
         else:
