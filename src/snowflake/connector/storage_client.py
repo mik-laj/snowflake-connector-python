@@ -261,7 +261,16 @@ class SnowflakeStorageClient(ABC):
             cur_timestamp = self.credentials.timestamp
             url, rest_kwargs = get_request_args()
             try:
-                response = rest_call(url, **rest_kwargs)
+                mydata = threading.local()
+                if self.meta.self and self.meta.self._cursor.connection:
+                    mydata.conn = self.meta.self._cursor.connection
+                if mydata.__dict__.get("conn"):
+                    conn: "SnowflakeConnection" = mydata.conn
+                    with conn._rest._use_requests_session() as session:
+                        logger.debug(f"using session {session}")
+                        response = session.request(verb, url, **rest_kwargs)
+                else:
+                    response = rest_call(url, **rest_kwargs)
                 if self._has_expired_presigned_url(response):
                     self._update_presigned_url()
                 else:
