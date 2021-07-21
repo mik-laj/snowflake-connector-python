@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmik-laj%2Fsnowflake-connector-python.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmik-laj%2Fsnowflake-connector-python?ref=badge_shield)
+
 Snowflake Connector for Python
 ********************************************************************************
 
@@ -33,3 +35,6 @@ https://docs.snowflake.com/
 
 Feel free to file an issue or submit a PR here for general cases. For official support, contact Snowflake support at:
 https://community.snowflake.com/s/article/How-To-Submit-a-Support-Case-in-Snowflake-Lodge
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fmik-laj%2Fsnowflake-connector-python.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fmik-laj%2Fsnowflake-connector-python?ref=badge_large)
